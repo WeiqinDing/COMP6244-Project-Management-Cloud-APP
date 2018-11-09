@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Nav, Navbar, NavItem } from "react-bootstrap";
 import "./App.css";
 import Routes from "./Routes";
+import { LinkContainer } from "react-router-bootstrap";
 
 class App extends Component {
     render() {
@@ -17,8 +18,14 @@ class App extends Component {
                     </Navbar.Header>
                     <Navbar.Collapse>
                         <Nav pullRight>
-                            <NavItem href="/signup">Signup</NavItem>
-                            <NavItem href="/login">Login</NavItem>
+                            {/*A redirect component that redirects the link button
+                            within the page and does not refresh the page when redirected*/}
+                            <LinkContainer to="/signup">
+                                <NavItem>Signup</NavItem>
+                            </LinkContainer>
+                            <LinkContainer to="/login">
+                                <NavItem>Login</NavItem>
+                            </LinkContainer>
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>
