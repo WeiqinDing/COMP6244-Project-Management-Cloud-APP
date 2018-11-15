@@ -3,6 +3,7 @@ import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
 import "./Home.css";
 import { API } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
+import { Link } from "react-router-dom"
 
 export default class Home extends Component {
     constructor(props) {
