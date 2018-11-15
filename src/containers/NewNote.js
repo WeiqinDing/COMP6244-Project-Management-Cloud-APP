@@ -14,6 +14,7 @@ export default class NewNote extends Component {
 
         this.state = {
             isLoading: null,
+            title: "",
             content: ""
         };
     }
@@ -68,7 +69,16 @@ export default class NewNote extends Component {
         return (
             <div className="NewNote">
                 <form onSubmit={this.handleSubmit}>
+                    <FormGroup controlId="projectName">
+                        <ControlLabel>Project Name</ControlLabel>
+                        <FormControl
+                            onChange={this.handleChange}
+                            value={this.state.title}
+                            componentClass="titlearea"
+                            />
+                    </FormGroup>
                     <FormGroup controlId="content">
+                        <ControlLabel>Project Describe</ControlLabel>
                         <FormControl
                             onChange={this.handleChange}
                             value={this.state.content}

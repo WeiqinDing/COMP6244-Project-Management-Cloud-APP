@@ -6,3 +6,9 @@
     height: 300px;
     font-size: 24px;
 }
+
+.NewNote form titlearea {
+    height: 50px;
+    font-size: 24px;
+}
+

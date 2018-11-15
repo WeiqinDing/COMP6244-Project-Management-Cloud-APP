@@ -1,0 +1,10 @@
+the public/ is used to give a image for our website,
+pick up a image and us the realfavicongenerator.net to
+generate image to image package which can use in website,
+then put this in the public dir.
+
+change the public/index.html, add the link blocks in this file.
+let other files can include this images in any page.
+
+replace the public/manifest.json with the json context
+which described those images.
