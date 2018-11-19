@@ -1,11 +1,11 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import {
     HelpBlock,
     FormGroup,
     FormControl,
     ControlLabel
 } from "react-bootstrap";
-import { API, Auth } from "aws-amplify";
+import {API, Auth} from "aws-amplify";
 import LoaderButton from "../components/LoaderButton";
 import "./Signup.css";
 
@@ -44,13 +44,14 @@ export default class Signup extends Component {
     handleSubmit = async event => {
         event.preventDefault();
 
-        this.setState({ isLoading: true });
+        this.setState({isLoading: true});
 
         try {
             const newUser = await Auth.signUp({
                 username: this.state.email,
                 password: this.state.password
             });
+
             this.setState({
                 newUser
             });
@@ -58,29 +59,43 @@ export default class Signup extends Component {
             alert(e.message);
         }
 
-        this.setState({ isLoading: false });
+        this.setState({isLoading: false});
     }
 
     handleConfirmationSubmit = async event => {
         event.preventDefault();
 
-        this.setState({ isLoading: true });
+        this.setState({isLoading: true});
 
         try {
             await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
             await Auth.signIn(this.state.email, this.state.password);
+            //get user ID
+            const userInfo = await Auth.currentUserInfo();
+            const userID = userInfo.id;
+
+            console.log(userID);
+
+
+            await this.addUserToDB({
+                userID: userID,  //User ID
+                userRole: "Admin",
+            });
 
             this.props.userHasAuthenticated(true);
             this.props.history.push("/");
         } catch (e) {
             alert(e.message);
-            this.setState({ isLoading: false });
+            this.setState({isLoading: false});
         }
     }
 
-    addUserToDB = async () =>{
-        return API.post("certainRole", "/certainRole", )
+    addUserToDB(userInfo) {
+        return API.post("notes", "/certainrole", {
+            body: userInfo
+        });
     }
+
     renderConfirmationForm() {
         return (
             <form onSubmit={this.handleConfirmationSubmit}>
@@ -138,6 +153,7 @@ export default class Signup extends Component {
                 <LoaderButton
                     block
                     bsSize="large"
+                    bsStyle="primary"
                     disabled={!this.validateForm()}
                     type="submit"
                     isLoading={this.state.isLoading}

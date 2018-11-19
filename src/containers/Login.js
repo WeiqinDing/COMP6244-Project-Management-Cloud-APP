@@ -39,6 +39,7 @@ export default class Login extends Component {
         try {
             await Auth.signIn(this.state.email, this.state.password);
             this.props.userHasAuthenticated(true);
+            window.location.reload();
 
         } catch (e) {
             alert(e.message);
@@ -71,6 +72,7 @@ export default class Login extends Component {
                     <LoaderButton
                         block
                         bsSize="large"
+                        bsStyle="success"
                         disabled={!this.validateForm()}
                         type="submit"
                         isLoading={this.state.isLoading}
