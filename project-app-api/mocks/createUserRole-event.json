@@ -1,0 +1,8 @@
+{
+  "body":"{\"userID\":\"123456789-7979423-dfs432-5345\",\"userRole\":\"Developer\"}",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}

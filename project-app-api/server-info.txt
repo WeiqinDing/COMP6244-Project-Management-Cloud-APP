@@ -1,0 +1,49 @@
+Service Information
+service: notes-app-api
+stage: prod
+region: us-east-2
+stack: notes-app-api-prod
+api keys:
+  None
+endpoints:
+  POST - https://bgt1owkrkh.execute-api.us-east-2.amazonaws.com/prod/notes
+  GET - https://bgt1owkrkh.execute-api.us-east-2.amazonaws.com/prod/notes/{id}
+  GET - https://bgt1owkrkh.execute-api.us-east-2.amazonaws.com/prod/notes
+  PUT - https://bgt1owkrkh.execute-api.us-east-2.amazonaws.com/prod/notes/{id}
+  DELETE - https://bgt1owkrkh.execute-api.us-east-2.amazonaws.com/prod/notes/{id}
+functions:
+  create: notes-app-api-prod-create
+  get: notes-app-api-prod-get
+  list: notes-app-api-prod-list
+  update: notes-app-api-prod-update
+  delete: notes-app-api-prod-delete
+
+
+testing information
+npx aws-api-gateway-cli-test \
+--username='weiqin.ding@gmail.com' \
+--password='Passw0rd!' \
+--user-pool-id='us-east-2_xTGDhYxcJ' \
+--app-client-id='5l2iv5evh5tv9rd59jk404kot6' \
+--cognito-region='us-east-2' \
+--identity-pool-id='us-east-2:489a0f2f-866d-4cd1-a673-b1b65e58a4d5' \
+--invoke-url='https://bgt1owkrkh.execute-api.us-east-2.amazonaws.com/prod' \
+--api-gateway-region='us-east-2' \
+--path-template='/notes' \
+--method='POST' \
+--body='{"content":"hello world","attachment":"hello.jpg"}'
+npx: installed 105 in 178.098s
+Authenticating with User Pool
+Getting temporary credentials
+Making API request
+{ status: 200,
+  statusText: 'OK',
+  data:
+   { userId: 'us-east-2:a7618e6d-1683-4e9c-8ca6-78a1cac83496',
+     noteId: '0d35d7d0-e388-11e8-b7cd-c3d8c9721139',
+     content: 'hello world',
+     attachment: 'hello.jpg',
+     createdAt: 1541703411149 } }
+
+serverless invoke local --function createUserRole --path mocks/createUserRole-event.json
+serverless invoke local --function getUserRole --path mocks/getUserRole-even.json
