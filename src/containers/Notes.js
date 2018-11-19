@@ -1,10 +1,13 @@
-import React, { Component } from "react";
-import { API, Storage } from "aws-amplify";
-import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import React, {Component} from "react";
+import {API, Storage, Auth} from "aws-amplify";
+import {FormGroup, FormControl, ControlLabel} from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
 import "./Notes.css";
-import { s3Upload } from "../libs/awsLib";
+import {s3Upload} from "../libs/awsLib";
+import DropdownButton from "react-bootstrap/es/DropdownButton";
+import MenuItem from "react-bootstrap/es/MenuItem";
+import ButtonToolbar from "react-bootstrap/es/ButtonToolbar";
 
 export default class Notes extends Component {
     constructor(props) {
@@ -16,16 +19,30 @@ export default class Notes extends Component {
             isLoading: null,
             isDeleting: null,
             note: null,
+
             content: "",
+            projectContent: "",
+            projectName: "",
+            detail: "",
             attachmentURL: null
         };
     }
+
+    // async getAttributes() {
+    //
+    //     const user = Auth.currentUserInfo();
+    //     const userAtt = Auth.userAttributes(user);
+    //     console.log(user);
+    //     console.log(userAtt);
+    //
+    //     return true;
+    // }
 
     async componentDidMount() {
         try {
             let attachmentURL;
             const note = await this.getNote();
-            const { content, attachment } = note;
+            const {content, attachment} = note;
 
             if (attachment) {
                 attachmentURL = await Storage.vault.get(attachment);
@@ -35,6 +52,11 @@ export default class Notes extends Component {
                 note,
                 content,
                 attachmentURL
+            });
+            this.setState({
+                projectContent: content.projectContent,
+                projectName: content.projectName,
+                detail: content.detail
             });
         } catch (e) {
             alert(e);
@@ -46,7 +68,7 @@ export default class Notes extends Component {
     }
 
     validateForm() {
-        return this.state.content.length > 0;
+        return this.state.projectContent.length > 0;
     }
 
     formatFilename(str) {
@@ -75,11 +97,11 @@ export default class Notes extends Component {
         event.preventDefault();
 
         if (this.file && this.file.size > config.MAX_ATTACHMENT_SIZE) {
-            alert(`Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE/1000000} MB.`);
+            alert(`Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE / 1000000} MB.`);
             return;
         }
 
-        this.setState({ isLoading: true });
+        this.setState({isLoading: true});
 
         try {
             if (this.file) {
@@ -87,13 +109,17 @@ export default class Notes extends Component {
             }
 
             await this.saveNote({
-                content: this.state.content,
+                content: {
+                    projectContent: this.state.projectContent,
+                    projectName: this.state.projectName,
+                    detail: this.state.detail
+                },
                 attachment: attachment || this.state.note.attachment
             });
             this.props.history.push("/");
         } catch (e) {
             alert(e);
-            this.setState({ isLoading: false });
+            this.setState({isLoading: false});
         }
     }
 
@@ -112,26 +138,56 @@ export default class Notes extends Component {
             return;
         }
 
-        this.setState({ isDeleting: true });
+        this.setState({isDeleting: true});
 
         try {
             await this.deleteNote();
             this.props.history.push("/");
         } catch (e) {
             alert(e);
-            this.setState({ isDeleting: false });
+            this.setState({isDeleting: false});
         }
+    }
+
+    handleDropdownButton = event => {
+        this.setState({detail: event});
     }
 
     render() {
         return (
+
+
             <div className="Notes">
                 {this.state.note &&
                 <form onSubmit={this.handleSubmit}>
-                    <FormGroup controlId="content">
+                    <FormGroup controlId="projectName" bsSize={"large"}>
+                        <ControlLabel>Project Name</ControlLabel>
                         <FormControl
                             onChange={this.handleChange}
-                            value={this.state.content}
+                            value={this.state.projectName}
+                            type={"projectName"}
+                        />
+                    </FormGroup>
+
+                    <ButtonToolbar>
+                        <DropdownButton
+                            bsStyle={"success"}
+                            title={this.state.detail}
+                            key={"statusbutton"}
+                            id={"dropdown-basic"}
+                            onSelect={this.handleDropdownButton}>
+                            <MenuItem eventKey="Completed">Completed</MenuItem>
+                            <MenuItem eventKey="Active">Active</MenuItem>
+                            <MenuItem eventKey="Pending">Pending</MenuItem>
+
+                        </DropdownButton>
+                    </ButtonToolbar>
+
+                    <FormGroup controlId="projectContent">
+                        <ControlLabel>Project Describe</ControlLabel>
+                        <FormControl
+                            onChange={this.handleChange}
+                            value={this.state.projectContent}
                             componentClass="textarea"
                         />
                     </FormGroup>
@@ -151,7 +207,7 @@ export default class Notes extends Component {
                     <FormGroup controlId="file">
                         {!this.state.note.attachment &&
                         <ControlLabel>Attachment</ControlLabel>}
-                        <FormControl onChange={this.handleFileChange} type="file" />
+                        <FormControl onChange={this.handleFileChange} type="file"/>
                     </FormGroup>
                     <LoaderButton
                         block

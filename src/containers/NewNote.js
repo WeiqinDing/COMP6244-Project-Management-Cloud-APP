@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
-import { API } from "aws-amplify";
+import React, {Component} from "react";
+import {FormGroup, FormControl, ControlLabel} from "react-bootstrap";
+import {API, Auth} from "aws-amplify";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
 import "./NewNote.css";
-import { s3Upload } from "../libs/awsLib";
+import {s3Upload} from "../libs/awsLib";
 
 export default class NewNote extends Component {
     constructor(props) {
@@ -14,13 +14,16 @@ export default class NewNote extends Component {
 
         this.state = {
             isLoading: null,
-            title: "",
-            content: ""
+
+            projectContent: "",
+            projectName: "",
+            detail: "Active"
+
         };
     }
 
     validateForm() {
-        return this.state.content.length > 0;
+        return this.state.projectContent.length > 0;
     }
 
     handleChange = event => {
@@ -28,6 +31,7 @@ export default class NewNote extends Component {
             [event.target.id]: event.target.value
         });
     }
+
 
     handleFileChange = event => {
         this.file = event.target.files[0];
@@ -37,11 +41,11 @@ export default class NewNote extends Component {
         event.preventDefault();
 
         if (this.file && this.file.size > config.MAX_ATTACHMENT_SIZE) {
-            alert(`Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE/1000000} MB.`);
+            alert(`Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE / 1000000} MB.`);
             return;
         }
 
-        this.setState({ isLoading: true });
+        this.setState({isLoading: true});
 
         try {
             const attachment = this.file
@@ -50,12 +54,17 @@ export default class NewNote extends Component {
 
             await this.createNote({
                 attachment,
-                content: this.state.content
+                content: {
+                    projectContent: this.state.projectContent,
+                    projectName: this.state.projectName,
+                    detail: this.state.detail
+                }
+
             });
             this.props.history.push("/");
         } catch (e) {
             alert(e);
-            this.setState({ isLoading: false });
+            this.setState({isLoading: false});
         }
     }
 
@@ -66,28 +75,34 @@ export default class NewNote extends Component {
     }
 
     render() {
+
         return (
             <div className="NewNote">
                 <form onSubmit={this.handleSubmit}>
-                    <FormGroup controlId="projectName">
+                    {/*<input type="text" className="form-control js-blob-filename js-breadcrumb-nav" name="projectname"
+                           defaultValue="Name your project…" autoFocus="autofocus"/>*/}
+                    <FormGroup controlId="projectName" bsSize="large">
                         <ControlLabel>Project Name</ControlLabel>
                         <FormControl
+                            autoFocus
+                            type={"projectName"}
+                            value={this.state.projectName}
                             onChange={this.handleChange}
-                            value={this.state.title}
-                            componentClass="titlearea"
-                            />
+
+                        />
                     </FormGroup>
-                    <FormGroup controlId="content">
+                    <FormGroup controlId="projectContent">
                         <ControlLabel>Project Describe</ControlLabel>
                         <FormControl
-                            onChange={this.handleChange}
-                            value={this.state.content}
                             componentClass="textarea"
+                            type={"projectContent"}
+                            value={this.state.projectContent}
+                            onChange={this.handleChange}
                         />
                     </FormGroup>
                     <FormGroup controlId="file">
                         <ControlLabel>Attachment</ControlLabel>
-                        <FormControl onChange={this.handleFileChange} type="file" />
+                        <FormControl onChange={this.handleFileChange} type="file"/>
                     </FormGroup>
                     <LoaderButton
                         block

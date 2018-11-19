@@ -5,7 +5,7 @@ import {
     FormControl,
     ControlLabel
 } from "react-bootstrap";
-import { Auth } from "aws-amplify";
+import { API, Auth } from "aws-amplify";
 import LoaderButton from "../components/LoaderButton";
 import "./Signup.css";
 
@@ -78,6 +78,9 @@ export default class Signup extends Component {
         }
     }
 
+    addUserToDB = async () =>{
+        return API.post("certainRole", "/certainRole", )
+    }
     renderConfirmationForm() {
         return (
             <form onSubmit={this.handleConfirmationSubmit}>

@@ -1,10 +1,11 @@
 import React, { Component, Fragment } from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link,  withRouter } from "react-router-dom";
 import { Nav, Navbar, NavItem } from "react-bootstrap";
 import "./App.css";
 import Routes from "./Routes";
 import { LinkContainer } from "react-router-bootstrap";
 import { Auth } from "aws-amplify";
+import LoaderButton from "./components/LoaderButton";
 
 class App extends Component {
 
@@ -55,7 +56,8 @@ class App extends Component {
                 <Navbar fluid collapseOnSelect>
                     <Navbar.Header>
                         <Navbar.Brand>
-                            <Link to="/">GitPorject</Link>
+                            <Link to="/" className="btn btn-primary">Back</Link>
+                            <Link to="/" className={"mid"}>GitProject</Link>
                         </Navbar.Brand>
                         <Navbar.Toggle />
                     </Navbar.Header>
